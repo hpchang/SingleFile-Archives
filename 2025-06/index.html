@@ -9,7 +9,10 @@
 <body>
     <script>
         (async () => {
-            const folderName = "2025-06";
+            // 自動取得 index.html 所在資料夾名稱
+            const pathParts = window.location.pathname.split('/');
+            // 假設 index.html 一定在 /<folderName>/index.html 結構
+            const folderName = pathParts[pathParts.length - 2];            
             const response = await fetch(`https://api.github.com/repos/hpchang/SingleFile-Archives/contents/${folderName}/`);
             const files = await response.json();
             const listElement = document.createElement("ul");
