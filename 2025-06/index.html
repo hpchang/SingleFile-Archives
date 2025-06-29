@@ -16,7 +16,7 @@
                 if (file.name != "index.html") {
                     const itemElement = document.createElement("li");
                     const linkElement = document.createElement("a");
-                    linkElement.href = file.path;
+                    linkElement.href = file.path.replace('2025-06/', '');
                     linkElement.textContent = file.name;
                     linkElement.target = "_blank";
                     itemElement.appendChild(linkElement);
