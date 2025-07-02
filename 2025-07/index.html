@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Archives</title>
+</head>
+<body>
+<script>
+    // Single Responsibility: Each function does one thing well.
+
+    // 1. Get the current folder name from the URL.
+    function getCurrentFolderName() {
+        const pathParts = window.location.pathname.split('/');
+        return pathParts[pathParts.length - 2];
+    }
+
+    // 2. Fetch file list from GitHub API for a given folder.
+    async function fetchFileListFromGitHub(folderName) {
+        const apiUrl = `https://api.github.com/repos/hpchang/SingleFile-Archives/contents/${folderName}/`;
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error('Failed to fetch file list');
+        }
+        return await response.json();
+    }
+
+    // 3. Filter out unwanted files (e.g., index.html itself).
+    function filterFiles(files, exclude = ["index.html"]) {
+        return files.filter(file => !exclude.includes(file.name));
+    }
+
+    // 4. Create a list element of links from the file list.
+    function createFileListElement(files, folderName) {
+        const listElement = document.createElement("ul");
+        files.forEach(file => {
+            const itemElement = document.createElement("li");
+            const linkElement = document.createElement("a");
+            linkElement.href = file.path.replace(folderName + '/', '');
+            linkElement.textContent = file.name;
+            linkElement.target = "_blank";
+            itemElement.appendChild(linkElement);
+            listElement.appendChild(itemElement);
+        });
+        return listElement;
+    }
+
+    // 5. Application entry point: coordinates all steps.
+    async function main() {
+        try {
+            const folderName = getCurrentFolderName();
+            const files = await fetchFileListFromGitHub(folderName);
+            const filteredFiles = filterFiles(files);
+            const listElement = createFileListElement(filteredFiles, folderName);
+            document.body.appendChild(listElement);
+        } catch (error) {
+            document.body.innerHTML = `<p>Error: ${error.message}</p>`;
+        }
+    }
+
+    // Open/Closed: New steps can be added as new functions.
+    // Liskov and Interface Segregation: Each function can be tested/replaced independently.
+    // Dependency Inversion: main() depends on abstractions (functions) not concrete details.
+
+    main();
+</script>
+</body>
+</html>
